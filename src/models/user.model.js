@@ -55,7 +55,7 @@ const userSchema=new Schema({
 })
 
 
-//the use of pre hook is that it runs before saving any anything
+//the use of pre hook is that it runs before saving  anything
 //we are not using here arrow function because arrow function does not have its this ka reference and here the reference is very important
 userSchema.pre("save", async function (next){
     if(!this.isModified("password")) return next()
@@ -65,7 +65,36 @@ userSchema.pre("save", async function (next){
 
 userSchema.methods.isPasswordCorrect= async function
 (password){
-    bcrypt.compare()
+   return await bcrypt.compare(password,this.password)
 }
+
+userSchema.methods.generateAccessToken= async function
+(){
+   return jwt.sign({
+    id:this._id,
+    email:this.email,
+    username:this.username,
+    fullname:this.fullname
+   },
+   process.env.ACCESS_TOKEN_SECRET,
+   {
+    expiresIn:process.env.ACCESS_TOKEN_EXPIRY
+   }
+)
+}
+
+userSchema.methods.generaterefreshToken= async function
+(){
+    return jwt.sign({
+        id:this._id,
+ 
+       },
+       process.env.REFRESH_TOKEN_SECRET,
+       {
+        expiresIn:process.env.REFRESH_TOKEN_EXPIRY
+       }
+    )
+    }
+
 
 export const User=mongoose.model("User",userSchema)
