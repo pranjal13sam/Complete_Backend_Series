@@ -2,7 +2,7 @@
 
 const asyncHandler=(requestHandler)=>{
     //returning (req,res,next) this whole block(function) is a high order function
-    (req,res,next)=>{
+     return (req,res,next)=>{
         Promise.resolve(requestHandler(req,res,next)).catch((err)=>next(err))
     }
 } 
